@@ -35,11 +35,11 @@ void display_available_books() {
 
     Book book;
     printf("\nAvailable Books:\n");
-    printf("ID\t\tTitle\t\t\t\tAuthor\n");
+    printf("ID\t\tTitle\t\t\t\tAuthor\t\t\t\tQuantity\n");
     printf("------------------------------------------------------------\n");
     while (fread(&book, sizeof(Book), 1, fp)) {
         if (book.is_available) {
-            printf("%-15s\t%-30s\t%-30s\n", book.book_id, book.title, book.author);
+            printf("%-15s\t%-30s\t%-30s\t%d\n", book.book_id, book.title, book.author, book.quantity);
         }
     }
 
@@ -55,11 +55,11 @@ void display_borrowed_books() {
 
     Book book;
     printf("\nBorrowed Books:\n");
-    printf("ID\t\tTitle\t\t\t\tAuthor\n");
+    printf("ID\t\tTitle\t\t\t\tAuthor\t\t\t\tQuantity\n");
     printf("------------------------------------------------------------\n");
     while (fread(&book, sizeof(Book), 1, fp)) {
         if (!book.is_available) {
-            printf("%-15s\t%-30s\t%-30s\n", book.book_id, book.title, book.author);
+            printf("%-15s\t%-30s\t%-30s\t%d\n", book.book_id, book.title, book.author, book.quantity);
         }
     }
 
@@ -87,7 +87,8 @@ int borrow_book(const char* username, const char* book_id) {
     while (fread(&book, sizeof(Book), 1, fp)) {
         if (strcmp(book.book_id, book_id) == 0) {
             pos = ftell(fp) - sizeof(Book);
-            book.is_available = 0;
+            book.quantity--;
+            book.is_available = book.quantity > 0 ? 1 : 0;
             fseek(fp, pos, SEEK_SET);
             fwrite(&book, sizeof(Book), 1, fp);
             fclose(fp);
@@ -125,6 +126,7 @@ int return_book(const char* username, const char* book_id) {
     while (fread(&book, sizeof(Book), 1, fp)) {
         if (strcmp(book.book_id, book_id) == 0) {
             pos = ftell(fp) - sizeof(Book);
+            book.quantity++;
             book.is_available = 1;
             fseek(fp, pos, SEEK_SET);
             fwrite(&book, sizeof(Book), 1, fp);

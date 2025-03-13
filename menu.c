@@ -29,12 +29,10 @@ void handle_admin_menu() {
         {"Manage Users", manage_users},
         {"Generate Reports", generate_reports},
         {"View Reports", view_reports},
-        {"Popular Books", popular_books},
-        {"Fine Revenue", fine_revenue},
         {"Logout", logout_system}
     };
     
-    display_menu("Admin Menu", admin_items, 7);
+    display_menu("Admin Menu", admin_items, 5);
 }
 
 void handle_student_menu() {

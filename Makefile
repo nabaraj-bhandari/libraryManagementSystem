@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -I.
 DEPS = headers.h
-OBJ = main.o admin.o student.o transactions.o utils.o database.o stats.o
+OBJ = main.o admin.o student.o transactions.o utils.o database.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)

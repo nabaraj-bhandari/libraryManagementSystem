@@ -60,7 +60,10 @@ void add_book() {
     printf("Enter Author: ");
     fgets(book.author, MAX_AUTHOR, stdin);
     book.author[strcspn(book.author, "\n")] = 0;
-    book.is_available = 1;
+    printf("Enter Quantity: ");
+    scanf("%d", &book.quantity);
+    clear_input_buffer();
+    book.is_available = book.quantity > 0 ? 1 : 0;
 
     FILE *fp = fopen(BOOKS_FILE, "ab");
     if (!fp) {
@@ -146,6 +149,10 @@ void update_book() {
             printf("Enter new Author: ");
             fgets(book.author, MAX_AUTHOR, stdin);
             book.author[strcspn(book.author, "\n")] = 0;
+            printf("Enter new Quantity: ");
+            scanf("%d", &book.quantity);
+            clear_input_buffer();
+            book.is_available = book.quantity > 0 ? 1 : 0;
             fseek(fp, pos, SEEK_SET);
             fwrite(&book, sizeof(Book), 1, fp);
             printf("Book updated successfully!\n");
@@ -170,10 +177,10 @@ void display_all_books() {
 
     Book book;
     printf("\nAll Books:\n");
-    printf("ID\t\tTitle\t\t\t\tAuthor\t\t\t\tAvailability\n");
+    printf("ID\t\tTitle\t\t\t\tAuthor\t\t\t\tQuantity\tAvailability\n");
     printf("----------------------------------------------------------------------------------------------------------\n");
     while (fread(&book, sizeof(Book), 1, fp)) {
-        printf("%-15s\t%-30s\t%-30s\t%s\n", book.book_id, book.title, book.author, book.is_available ? "Available" : "Borrowed");
+        printf("%-15s\t%-30s\t%-30s\t%d\t\t%s\n", book.book_id, book.title, book.author, book.quantity, book.is_available ? "Available" : "Borrowed");
     }
 
     fclose(fp);
@@ -187,7 +194,7 @@ void generate_reports() {
         return;
     }
 
-    fprintf(fp, "Book ID,Title,Author,Availability\n");
+    fprintf(fp, "Book ID,Title,Author,Quantity,Availability\n");
 
     FILE *books_fp = fopen(BOOKS_FILE, "rb");
     if (!books_fp) {
@@ -198,7 +205,7 @@ void generate_reports() {
 
     Book book;
     while (fread(&book, sizeof(Book), 1, books_fp)) {
-        fprintf(fp, "%s,%s,%s,%s\n", book.book_id, book.title, book.author, book.is_available ? "Available" : "Borrowed");
+        fprintf(fp, "%s,%s,%s,%d,%s\n", book.book_id, book.title, book.author, book.quantity, book.is_available ? "Available" : "Borrowed");
     }
 
     fclose(books_fp);
@@ -216,6 +223,8 @@ void view_reports() {
 
     char line[256];
     printf("\nGenerated Reports:\n");
+    printf("Book ID\t\tTitle\t\t\t\tAuthor\t\t\t\tQuantity\tAvailability\n");
+    printf("----------------------------------------------------------------------------------------------------------\n");
     while (fgets(line, sizeof(line), fp)) {
         char *token = strtok(line, ",");
         printf("%-15s\t", token);
@@ -223,6 +232,8 @@ void view_reports() {
         printf("%-30s\t", token);
         token = strtok(NULL, ",");
         printf("%-30s\t", token);
+        token = strtok(NULL, ",");
+        printf("%-8s\t", token);
         token = strtok(NULL, ",");
         printf("%s", token);
     }
